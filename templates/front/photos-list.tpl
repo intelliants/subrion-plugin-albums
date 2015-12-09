@@ -7,5 +7,5 @@
 				<div class="row">
 			{/if}
 		</div>
-	{/foreach}	
+	{/foreach}
 </div>

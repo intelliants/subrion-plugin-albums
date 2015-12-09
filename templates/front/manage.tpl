@@ -12,16 +12,16 @@
 				{include file="{$smarty.const.IA_PLUGINS}albums/templates/front/photos-list.tpl"}
 
 				<div class="album-actions">
-					<button type="submit" name="cover" class="btn btn-mini btn-info" id="buttoncover" disabled>
+					<button type="submit" name="cover" class="btn btn-xs btn-info" id="buttoncover" disabled>
 						<i class="icon-camera"></i>
 						{lang key='cover'}
 					</button>
-					<button type="submit" name="delete" class="btn btn-mini btn-danger delete" id="remove-photo" disabled>
+					<button type="submit" name="delete" class="btn btn-xs btn-danger delete" id="remove-photo" disabled>
 						<i class="icon-remove"></i>
 						{lang key='delete'}
 					</button>
 					{if count($albums) > 1}
-						<button type="button" name="move-link" id="move-link" class="btn btn-mini" data-toggle="modal" data-target="#move-photos" disabled>
+						<button type="button" name="move-link" id="move-link" class="btn btn-xs" data-toggle="modal" data-target="#move-photos" disabled>
 							<i class="icon-share-alt"></i>
 							{lang key='move'}
 						</button>

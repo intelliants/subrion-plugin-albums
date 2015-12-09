@@ -4,9 +4,9 @@
 	<summary>An option for users to create their own picture galleries.</summary>
 	<author>Intelliants LLC</author>
 	<contributor>Intelliants LLC</contributor>
-	<version>3.2.2</version>
-	<date>2015-06-01</date>
-	<compatibility>3.2.5</compatibility>
+	<version>4.0.0</version>
+	<date>2015-12-09</date>
+	<compatibility>4.0</compatibility>
 
 	<pages>
 		<page url="albums/" name="albums" readonly="1">Albums</page>
