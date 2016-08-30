@@ -77,7 +77,7 @@ class iaAlbum extends abstractPlugin
 		$where = array_merge($where, $persistentConditions);
 		$where || $where[] = iaDb::EMPTY_CONDITION;
 		$where = implode(' AND ', $where);
-		$this->_iaDb->bind($where, $values);
+		$this->iaDb->bind($where, $values);
 
 		if (is_array($columns))
 		{
@@ -111,8 +111,8 @@ class iaAlbum extends abstractPlugin
 		}
 
 		return array(
-			'data' => $this->_iaDb->getAll($sql),
-			'total' => (int)$this->_iaDb->one(iaDb::STMT_COUNT_ROWS, $where)
+			'data' => $this->iaDb->getAll($sql),
+			'total' => (int)$this->iaDb->one(iaDb::STMT_COUNT_ROWS, $where)
 		);
 	}
 }
