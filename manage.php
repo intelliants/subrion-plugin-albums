@@ -24,312 +24,273 @@
  *
  ******************************************************************************/
 
-if (iaView::REQUEST_HTML == $iaView->getRequestType())
-{
-	if (!iaUsers::hasIdentity())
-	{
-		return iaView::accessDenied();
-	}
+if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
+    if (!iaUsers::hasIdentity()) {
+        return iaView::accessDenied();
+    }
 
-	$iaDb->setTable('albums');
+    $iaDb->setTable('albums');
 
-	$iaUtil = $iaCore->factory('util');
-	$iaUsers = $iaCore->factory('users');
-	$iaPicture = $iaCore->factory('picture');
+    $iaUtil = $iaCore->factory('util');
+    $iaUsers = $iaCore->factory('users');
+    $iaField = $iaCore->factory('field');
 
-	$albumId = null;
-	$albumData = null;
+    $albumId = null;
+    $albumData = null;
 
-	if (isset($_POST['action']))
-	{
-		$error = false;
-		$messages = array();
+    if (isset($_POST['action'])) {
+        $error = false;
+        $messages = [];
 
-		switch($_POST['action'])
-		{
-			case 'edit_album':
-			case 'add_album':
-				$data = array(
-					'title' => trim($_POST['title']),
-					'description' => $_POST['description'],
-					'date' => date(iaDb::DATETIME_SHORT_FORMAT),
-					'member_id' => iaUsers::getIdentity()->id
-				);
+        switch ($_POST['action']) {
+            case 'edit_album':
+            case 'add_album':
+                $data = [
+                    'title' => trim($_POST['title']),
+                    'description' => $_POST['description'],
+                    'date' => date(iaDb::DATETIME_SHORT_FORMAT),
+                    'member_id' => iaUsers::getIdentity()->id
+                ];
 
-				if (empty($data['title']))
-				{
-					$error = true;
-					$messages[] = iaLanguage::get('title_incorrect');
-				}
-				else
-				{
-					// title exists
-					if ($iaDb->exists('`member_id` = :member AND `title` = :title', array('member' => iaUsers::getIdentity()->id, 'title' => $data['title']))
-						&& $_POST['action'] != 'edit_album')
-					{
-						$error = true;
-						$messages[] = iaLanguage::get('title_exists');
-					}
-					else
-					{
-						if ($_POST['action'] == 'edit_album')
-						{
-							$albumId = (int)$_POST['album_id'];
-							if ($iaDb->exists(iaDb::convertIds($albumId)))
-							{
-								unset($data['date']);
+                if (empty($data['title'])) {
+                    $error = true;
+                    $messages[] = iaLanguage::get('title_incorrect');
+                } else {
+                    // title exists
+                    if ($iaDb->exists('`member_id` = :member AND `title` = :title',
+                            ['member' => iaUsers::getIdentity()->id, 'title' => $data['title']])
+                        && $_POST['action'] != 'edit_album'
+                    ) {
+                        $error = true;
+                        $messages[] = iaLanguage::get('title_exists');
+                    } else {
+                        if ($_POST['action'] == 'edit_album') {
+                            $albumId = (int)$_POST['album_id'];
+                            if ($iaDb->exists(iaDb::convertIds($albumId))) {
+                                unset($data['date']);
 
-								$iaDb->update($data, iaDb::convertIds($albumId));
-								$error = false;
-								$messages[] = iaLanguage::get('saved');
-							}
-							else
-							{
-								$error = true;
-								$messages[] = iaLanguage::get('album_not_exists');
-							}
-						}
-						else
-						{
-							$iaDb->insert($data);
+                                $iaDb->update($data, iaDb::convertIds($albumId));
+                                $error = false;
+                                $messages[] = iaLanguage::get('saved');
+                            } else {
+                                $error = true;
+                                $messages[] = iaLanguage::get('album_not_exists');
+                            }
+                        } else {
+                            $iaDb->insert($data);
 
-							$error = false;
-							$messages[] = iaLanguage::get('album_created');
-						}
-					}
-				}
+                            $error = false;
+                            $messages[] = iaLanguage::get('album_created');
+                        }
+                    }
+                }
 
-				$iaView->setMessages($messages, $error ? iaView::ERROR : iaView::SUCCESS);
+                $iaView->setMessages($messages, $error ? iaView::ERROR : iaView::SUCCESS);
 
-				break;
+                break;
 
-			case 'remove_album':
-				$albumData = (int)$_POST['album_id'];
-				$albumData = $iaDb->one_bind(iaDb::ID_COLUMN_SELECTION, '`id` = :id AND `member_id` = :member', array('id' => $albumData, 'member' => iaUsers::getIdentity()->id));
+            case 'remove_album':
+                $albumData = (int)$_POST['album_id'];
+                $albumData = $iaDb->one_bind(iaDb::ID_COLUMN_SELECTION, '`id` = :id AND `member_id` = :member',
+                    ['id' => $albumData, 'member' => iaUsers::getIdentity()->id]);
 
-				if ($albumData)
-				{
-					$photos = $iaDb->all(array('id', 'path'), "`member_id`=" . iaUsers::getIdentity()->id . " AND `album_id`=$albumData", null, null, 'albums_photos');
+                if ($albumData) {
+                    $photos = $iaDb->all(['id', 'path'],
+                        "`member_id`=" . iaUsers::getIdentity()->id . " AND `album_id`=$albumData", null, null,
+                        'albums_photos');
 
-					if ($photos)
-					{
-						$photosId = array();
-						foreach ($photos as $entry)
-						{
-							$photosId[] = $entry['id'];
+                    if ($photos) {
+                        $photosId = [];
+                        foreach ($photos as $entry) {
+                            $photosId[] = $entry['id'];
 
-							$iaPicture->delete($entry['path']);
-						}
-						$photosId = implode(',', $photosId);
-						$iaDb->delete("`id` IN($photosId)", 'albums_photos');
-					}
+                            $iaField->deleteUploadedFile('path', 'albums_photos', $entry['id'], $entry['path']);
+                        }
+                        $photosId = implode(',', $photosId);
+                        $iaDb->delete("`id` IN($photosId)", 'albums_photos');
+                    }
 
-					$iaDb->delete(iaDb::convertIds($albumData));
+                    $iaDb->delete(iaDb::convertIds($albumData));
 
-					$iaView->setMessages(iaLanguage::get('album_removed'), iaView::SUCCESS);
+                    $iaView->setMessages(iaLanguage::get('album_removed'), iaView::SUCCESS);
 
-					iaUtil::go_to(IA_URL . 'profile/albums/');
-				}
+                    iaUtil::go_to(IA_URL . 'profile/albums/');
+                }
 
-				break;
+                break;
 
-			case 'add_img':
-				$albumId = (int)$_POST['album_id'];
-				$where = sprintf('`member_id` = %d AND `id` = %d', iaUsers::getIdentity()->id, $albumId);
-				$photo = isset($_FILES['photo']) ? $_FILES['photo'] : null;
+            case 'add_img':
+                $albumId = (int)$_POST['album_id'];
+                $where = sprintf('`member_id` = %d AND `id` = %d', iaUsers::getIdentity()->id, $albumId);
+                $albumData = $iaDb->row(['id', 'cover'], $where);
+                $currentPhotosCount = (int)$iaDb->one(iaDb::STMT_COUNT_ROWS, $where);
 
-				$albumData = $iaDb->row(array('id', 'cover'), $where);
-				$currentPhotosCount = (int)$iaDb->one(iaDb::STMT_COUNT_ROWS, $where);
+                if (empty($albumData)) {
+                    $error = true;
+                    $messages[] = iaLanguage::get('album_invalid');
+                }
+                if ($currentPhotosCount >= $iaCore->get('album_num_photos')) {
+                    $error = true;
+                    $messages[] = iaLanguage::get('photo_limit');
+                }
 
-				if (empty($albumData))
-				{
-					$error = true;
-					$messages[] = iaLanguage::get('album_invalid');
-				}
-				if ($currentPhotosCount >= $iaCore->get('album_num_photos'))
-				{
-					$error = true;
-					$messages[] = iaLanguage::get('photo_limit');
-				}
-				if (empty($photo) || $photo['error'])
-				{
-					$error = true;
-					$messages[] = iaLanguage::get('choose_photo');
-				}
-				if (!$error && !in_array($photo['type'], array('image/gif', 'image/jpeg', 'image/pjpeg', 'image/png')))
-				{
-					$error = true;
-					$messages[] = iaLanguage::get('unsupported_image_type');
-				}
+                if (!$error) {
+                    $imgThumbDimension = explode(',', $iaCore->get('album_thumb_dim'));
+                    $imgDimension = explode(',', $iaCore->get('album_dim'));
 
-				if (!$error)
-				{
-					$path = $iaUtil->getAccountDir(iaUsers::getIdentity()->username);
-					$tok = 'photo_' . iaUtil::generateToken();
+                    if (isset($_FILES['photo']['error']) && !$_FILES['photo']['error']) {
+                        try {
+                            $path = $iaField->uploadImage($_FILES['photo'], $imgDimension[0],
+                                $imgDimension[1], $imgThumbDimension[0],
+                                $imgThumbDimension[1], 'crop');
 
-					$imgThumbDimension = explode(',', $iaCore->get('album_thumb_dim'));
-					$imgDimension = explode(',', $iaCore->get('album_dim'));
+                        } catch (Exception $e) {
+                            $this->addMessage($e->getMessage(), false);
+                        }
+                    }
 
-					$imageInfo = array(
-						'thumb_width' => $imgThumbDimension[0],
-						'thumb_height' => $imgThumbDimension[1],
-						'image_width' => $imgDimension[0],
-						'image_height' => $imgDimension[1],
-						'resize_mode' => iaPicture::CROP
-					);
+                    $data = [
+                        'title' => trim($_POST['title']),
+                        'path' => (isset($path) && !empty($path)) ? $path : '',
+                        'member_id' => iaUsers::getIdentity()->id,
+                        'status' => ($iaCore->get('album_autoapprove') ? iaCore::STATUS_ACTIVE : iaCore::STATUS_APPROVAL),
+                        'album_id' => $albumData['id']
+                    ];
+                    $data['id'] = (int)$iaDb->insert($data, ['date' => iaDb::FUNCTION_NOW],
+                        'albums_photos'); // Insert and get photo ID
 
-					$name = $iaPicture->processImage($photo, $path, $tok, $imageInfo);
+                    // update album cover if empty
+                    if (empty($albumData['cover'])) {
+                        $iaDb->update(['cover' => $path], iaDb::convertIds($albumData['id']));
 
-					$data = array(
-						'title' => trim($_POST['title']),
-						'path' => $name,
-						'member_id' => iaUsers::getIdentity()->id,
-						'status' => ($iaCore->get('album_autoapprove') ? iaCore::STATUS_ACTIVE : iaCore::STATUS_APPROVAL),
-						'album_id' => $albumData['id']
-					);
-					$data['id'] = (int)$iaDb->insert($data, array('date' => iaDb::FUNCTION_NOW), 'albums_photos'); // Insert and get photo ID
+                        $iaView->setMessages(iaLanguage::get('album_photo_added'), iaView::SUCCESS);
+                    }
+                } else {
+                    $iaView->setMessages($messages);
+                }
+        }
+    }
 
-					// update album cover if empty
-					if (empty($albumData['cover']))
-					{
-						$iaDb->update(array('cover' => $name), iaDb::convertIds($albumData['id']));
+    $albums = $iaDb->all(iaDb::ALL_COLUMNS_SELECTION, iaDb::convertIds(iaUsers::getIdentity()->id, 'member_id'));
 
-						$iaView->setMessages(iaLanguage::get('album_photo_added'), iaView::SUCCESS);
-					}
-				}
-				else
-				{
-					$iaView->setMessages($messages);
-				}
-		}
-	}
+    if ($iaCore->requestPath) {
+        $albumId = (int)$iaCore->requestPath[0];
+        $albumData = null;
 
-	$albums = $iaDb->all(iaDb::ALL_COLUMNS_SELECTION, iaDb::convertIds(iaUsers::getIdentity()->id, 'member_id'));
+        foreach ($albums as $entry) {
+            if ($entry['id'] == $albumId) {
+                $albumData = $entry;
+            }
+        }
 
-	if ($iaCore->requestPath)
-	{
-		$albumId = (int)$iaCore->requestPath[0];
-		$albumData = null;
+        if ($albumData) {
+            /* ACTIONS */
+            $ids = '';
+            $checked = [];
+            if (isset($_POST['checked'])) {
+                $checked = $_POST['checked'];
+                $ids = implode(',', $checked);
+                array_walk($checked, 'intval');
+            }
+            if ($checked) {
+                $messages = [];
+                $error = false;
 
-		foreach ($albums as $entry)
-		{
-			if ($entry['id'] == $albumId)
-			{
-				$albumData = $entry;
-			}
-		}
+                switch (true) {
+                    case isset($_POST['cover']):
+                        $coverImage = $iaDb->one_bind('path', '`id` = :id AND `member_id` = :member',
+                            ['id' => $checked[0], 'member' => iaUsers::getIdentity()->id], 'albums_photos');
 
-		if ($albumData)
-		{
-			/* ACTIONS */
-			$ids = '';
-			$checked = array();
-			if (isset($_POST['checked']))
-			{
-				$checked = $_POST['checked'];
-				$ids = implode(',', $checked);
-				array_walk($checked, 'intval');
-			}
-			if ($checked)
-			{
-				$messages = array();
-				$error = false;
+                        $iaDb->update(['cover' => $coverImage], iaDb::convertIds($albumId));
+                        $albumData['cover'] = $coverImage;
 
-				switch (true)
-				{
-					case isset($_POST['cover']):
-						$coverImage = $iaDb->one_bind('path', '`id` = :id AND `member_id` = :member', array('id' => $checked[0], 'member' => iaUsers::getIdentity()->id), 'albums_photos');
+                        break;
 
-						$iaDb->update(array('cover' => $coverImage), iaDb::convertIds($albumId));
-						$albumData['cover'] = $coverImage;
+                    case isset($_POST['delete']):
+                        $where = sprintf('`id` IN(%s) AND `member_id` = %d', $ids, iaUsers::getIdentity()->id);
 
-						break;
+                        if ($photos = $iaDb->all(['id', 'path'], $where, null, null, 'albums_photos')) {
+                            foreach ($photos as $entry) {
+                                $iaField->deleteUploadedFile('path', 'albums_photos', $entry['id'], $entry['path']);
+                            }
 
-					case isset($_POST['delete']):
-						$where = sprintf('`id` IN(%s) AND `member_id` = %d', $ids, iaUsers::getIdentity()->id);
+                            if ($iaDb->delete('`id` IN (' . $ids . ')', 'albums_photos')) {
+                                foreach ($photos as $entry) {
+                                    // album's cover image removed
+                                    if ($entry['path'] == $albumData['cover']) {
+                                        $iaDb->update(['cover' => ''], iaDb::convertIds($albumId));
+                                        $albumData['cover'] = '';
+                                    }
+                                }
+                            }
+                        }
 
-						if ($photos = $iaDb->all(array('path'), $where, null, null, 'albums_photos'))
-						{
-							if ($iaDb->delete('`id` IN (' . $ids . ')', 'albums_photos'))
-							{
-								foreach ($photos as $entry)
-								{
-									$iaPicture->delete($entry['path']);
+                        break;
 
-									// album's cover image removed
-									if ($entry['path'] == $albumData['cover'])
-									{
-										$iaDb->update(array('cover' => ''), iaDb::convertIds($albumId));
-										$albumData['cover'] = '';
-									}
-								}
-							}
-						}
+                    case isset($_POST['move']):
+                        $moveId = (int)$_POST['move_to'];
+                        $move = $iaDb->one(iaDb::ID_COLUMN_SELECTION,
+                            "`member_id`=" . iaUsers::getIdentity()->id . " AND `id`=$moveId");
+                        $photos = $iaDb->all(iaDb::ID_COLUMN_SELECTION,
+                            "`member_id`=" . iaUsers::getIdentity()->id . " AND `id` IN($ids)", null, null,
+                            'albums_photos');
 
-						break;
+                        if ($move) {
+                            $iaDb->update(['album_id' => $moveId], '`id` IN (' . $ids . ')', 0, 'albums_photos');
+                            $messages[] = iaLanguage::get('photos_moved');
+                        }
 
-					case isset($_POST['move']):
-						$moveId = (int)$_POST['move_to'];
-						$move = $iaDb->one(iaDb::ID_COLUMN_SELECTION, "`member_id`=" . iaUsers::getIdentity()->id . " AND `id`=$moveId");
-						$photos = $iaDb->all(iaDb::ID_COLUMN_SELECTION, "`member_id`=" . iaUsers::getIdentity()->id . " AND `id` IN($ids)", null, null, 'albums_photos');
+                        break;
 
-						if ($move)
-						{
-							$iaDb->update(array('album_id' => $moveId), '`id` IN (' . $ids . ')', 0, 'albums_photos');
-							$messages[] = iaLanguage::get('photos_moved');
-						}
+                    default:
+                        $messages[] = iaLanguage::get('invalid_parameters');
+                        $error = true;
+                }
 
-						break;
+                $iaView->setMessages($messages, $error ? iaView::ERROR : iaView::SUCCESS);
+            }
 
-					default:
-						$messages[] = iaLanguage::get('invalid_parameters');
-						$error = true;
-				}
+            $myPhotos = $iaDb->all(iaDb::ALL_COLUMNS_SELECTION,
+                "`member_id`= " . iaUsers::getIdentity()->id . " AND `album_id` = {$albumId} ORDER BY `date`", 0, 0,
+                'albums_photos');
 
-				$iaView->setMessages($messages, $error ? iaView::ERROR : iaView::SUCCESS);
-			}
+            $iaView->assign('photos', $myPhotos);
 
-			$myPhotos = $iaDb->all(iaDb::ALL_COLUMNS_SELECTION, "`member_id`= " . iaUsers::getIdentity()->id . " AND `album_id` = {$albumId} ORDER BY `date`", 0, 0, 'albums_photos');
+            iaBreadcrumb::replaceEnd(iaLanguage::get('page_title_my_albums'), IA_URL . 'profile/albums/');
+            iaBreadcrumb::toEnd(iaSanitize::html($albumData['title']));
 
-			$iaView->assign('photos', $myPhotos);
+            $pageActions[] = [
+                'icon' => 'icon-arrow-left',
+                'title' => iaLanguage::get('back_to_albums'),
+                'url' => IA_URL . 'profile/albums/',
+                'classes' => 'btn-primary'
+            ];
 
-			iaBreadcrumb::replaceEnd(iaLanguage::get('page_title_my_albums'), IA_URL . 'profile/albums/');
-			iaBreadcrumb::toEnd(iaSanitize::html($albumData['title']));
+            $pageActions[] = [
+                'icon' => 'icon-edit',
+                'title' => iaLanguage::get('album_edit'),
+                'url' => IA_SELF . '#create-album',
+                'classes' => 'btn-success" data-toggle="modal'
+            ];
+        }
+    } else {
+        $pageActions[] = [
+            'icon' => 'icon-plus-sign',
+            'title' => iaLanguage::get('album_add'),
+            'url' => IA_SELF . '#create-album',
+            'classes' => 'btn-success" data-toggle="modal'
+        ];
+    }
 
-			$pageActions[] = array(
-				'icon' => 'icon-arrow-left',
-				'title' => iaLanguage::get('back_to_albums'),
-				'url' => IA_URL . 'profile/albums/',
-				'classes' => 'btn-primary'
-			);
+    $iaView->set('actions', $pageActions);
 
-			$pageActions[] = array(
-				'icon' => 'icon-edit',
-				'title' => iaLanguage::get('album_edit'),
-				'url' => IA_SELF . '#create-album',
-				'classes' => 'btn-success" data-toggle="modal'
-			);
-		}
-	}
-	else
-	{
-		$pageActions[] = array(
-			'icon' => 'icon-plus-sign',
-			'title' => iaLanguage::get('album_add'),
-			'url' => IA_SELF . '#create-album',
-			'classes' => 'btn-success" data-toggle="modal'
-		);
-	}
+    $iaView->assign('albums', $albums);
+    $iaView->assign('header', iaLanguage::get('manage_photos') . ($albumData ? ', ' . $albumData['title'] : ''));
+    $iaView->assign('in_album', (bool)$albumId);
+    $iaView->assign('is_manage_albums', true);
+    $iaView->assign('album', $albumData);
 
-	$iaView->set('actions', $pageActions);
+    $iaView->display('manage');
 
-	$iaView->assign('albums', $albums);
-	$iaView->assign('header', iaLanguage::get('manage_photos') . ($albumData ? ', ' . $albumData['title'] : ''));
-	$iaView->assign('in_album', (bool)$albumId);
-	$iaView->assign('is_manage_albums', true);
-	$iaView->assign('album', $albumData);
-
-	$iaView->display('manage');
-
-	$iaDb->resetTable();
+    $iaDb->resetTable();
 }

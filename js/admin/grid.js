@@ -20,8 +20,8 @@ Ext.onReady(function()
 				'status',
 				{name: 'path', width: 35, renderer: function(value)
 				{
-					var fullimage = value.replace(/\.(\w+)$/i, "~.$1");
-					return '<a href="' + intelli.config.ia_url + 'uploads/' + fullimage + '" rel="ia_lightbox[slider]"><i class="i-eye grid-icon" title="' + _t('view') + '"></i></a>';
+					var image = value.split('|');
+					return '<a href="' + intelli.config.ia_url + 'uploads/' + image[0] + 'large/' + image[1] + '" rel="ia_lightbox[slider]"><i class="i-eye grid-icon" style="text" title="' + _t('view') + '"></i></a>';
 				}},
 				'delete'
 			],

@@ -24,95 +24,87 @@
  *
  ******************************************************************************/
 
-class iaAlbum extends abstractPlugin
+class iaAlbum extends abstractModuleAdmin
 {
-	protected static $_table = 'albums_photos';
+    protected static $_table = 'albums_photos';
 
 
-	public function delete($id)
-	{
-		$imagePath = $this->iaDb->one('path', iaDb::convertIds($id), self::getTable());
-		$result = (bool)$this->iaDb->delete(iaDb::convertIds($id), self::getTable());
+    public function delete($id)
+    {
+        $imagePath = $this->iaDb->one('path', iaDb::convertIds($id), self::getTable());
+        $result = (bool)$this->iaDb->delete(iaDb::convertIds($id), self::getTable());
 
-		if ($result && $imagePath)
-		{
-			$iaPicture = $this->iaCore->factory('picture');
-			$iaPicture->delete($imagePath);
-		}
+        if ($result && $imagePath) {
+            $iaPicture = $this->iaCore->factory('picture');
+            $iaPicture->delete($imagePath);
+        }
 
-		return $result;
-	}
+        return $result;
+    }
 
-	public function gridRead($params, $columns, array $filterParams = array(), array $persistentConditions = array())
-	{
-		$params || $params = array();
+    public function gridRead($params, $columns, array $filterParams = [], array $persistentConditions = [])
+    {
+        $params || $params = [];
 
-		$start = isset($params['start']) ? (int)$params['start'] : 0;
-		$limit = isset($params['limit']) ? (int)$params['limit'] : 15;
+        $start = isset($params['start']) ? (int)$params['start'] : 0;
+        $limit = isset($params['limit']) ? (int)$params['limit'] : 15;
 
-		$sort = $params['sort'];
-		$dir = in_array($params['dir'], array(iaDb::ORDER_ASC, iaDb::ORDER_DESC)) ? $params['dir'] : iaDb::ORDER_ASC;
-		$order = ($sort && $dir) ? " ORDER BY `{$sort}` {$dir}" : '';
+        $sort = $params['sort'];
+        $dir = in_array($params['dir'], [iaDb::ORDER_ASC, iaDb::ORDER_DESC]) ? $params['dir'] : iaDb::ORDER_ASC;
+        $order = ($sort && $dir) ? " ORDER BY `{$sort}` {$dir}" : '';
 
-		$where = $values = array();
-		foreach ($filterParams as $name => $type)
-		{
-			if (isset($params[$name]) && $params[$name])
-			{
-				$value = iaSanitize::sql($params[$name]);
+        $where = $values = [];
+        foreach ($filterParams as $name => $type) {
+            if (isset($params[$name]) && $params[$name]) {
+                $value = iaSanitize::sql($params[$name]);
 
-				switch ($type)
-				{
-					case 'equal':
-						$where[] = sprintf('`%s` = :%s', $name, $name);
-						$values[$name] = $value;
-						break;
-					case 'like':
-						$where[] = sprintf('`%s` LIKE :%s', $name, $name);
-						$values[$name] = '%' . $value . '%';
-				}
-			}
-		}
+                switch ($type) {
+                    case 'equal':
+                        $where[] = sprintf('`%s` = :%s', $name, $name);
+                        $values[$name] = $value;
+                        break;
+                    case 'like':
+                        $where[] = sprintf('`%s` LIKE :%s', $name, $name);
+                        $values[$name] = '%' . $value . '%';
+                }
+            }
+        }
 
-		$where = array_merge($where, $persistentConditions);
-		$where || $where[] = iaDb::EMPTY_CONDITION;
-		$where = implode(' AND ', $where);
-		$this->iaDb->bind($where, $values);
+        $where = array_merge($where, $persistentConditions);
+        $where || $where[] = iaDb::EMPTY_CONDITION;
+        $where = implode(' AND ', $where);
+        $this->iaDb->bind($where, $values);
 
-		if (is_array($columns))
-		{
-			$columns = array_merge(array('id', 'delete' => 1), $columns);
-		}
+        if (is_array($columns)) {
+            $columns = array_merge(['id', 'delete' => 1], $columns);
+        }
 
-		$stmtFields = $columns;
+        $stmtFields = $columns;
 
-		if (is_array($columns))
-		{
-			$stmtFields = '';
-			foreach ($columns as $key => $field)
-			{
-				$stmtFields .= is_int($key)
-					? 'p.`' . $field . '`'
-					: sprintf('%s `%s`', is_numeric($field) ? $field : '`' . $field . '`', $key);
-				$stmtFields .= ', ';
-			}
-			$stmtFields = substr($stmtFields, 0, -2);
-		}
+        if (is_array($columns)) {
+            $stmtFields = '';
+            foreach ($columns as $key => $field) {
+                $stmtFields .= is_int($key)
+                    ? 'p.`' . $field . '`'
+                    : sprintf('%s `%s`', is_numeric($field) ? $field : '`' . $field . '`', $key);
+                $stmtFields .= ', ';
+            }
+            $stmtFields = substr($stmtFields, 0, -2);
+        }
 
-		$sql = 'SELECT ' . $stmtFields . ', IF(m.`fullname` != "", m.`fullname`, m.`username`) `username`'
-			. ' FROM `' . self::getTable(true) . '` p'
-			. ' LEFT JOIN `' . iaUsers::getTable(true) . '` m ON p.`member_id` = m.`id`'
-			. ' WHERE ' . $where
-			. $order;
+        $sql = 'SELECT ' . $stmtFields . ', IF(m.`fullname` != "", m.`fullname`, m.`username`) `username`'
+            . ' FROM `' . self::getTable(true) . '` p'
+            . ' LEFT JOIN `' . iaUsers::getTable(true) . '` m ON p.`member_id` = m.`id`'
+            . ' WHERE ' . $where
+            . $order;
 
-		if ($limit && stripos($where, 'limit') === false)
-		{
-			$sql .= ' LIMIT ' . $start . ', ' . $limit;
-		}
+        if ($limit && stripos($where, 'limit') === false) {
+            $sql .= ' LIMIT ' . $start . ', ' . $limit;
+        }
 
-		return array(
-			'data' => $this->iaDb->getAll($sql),
-			'total' => (int)$this->iaDb->one(iaDb::STMT_COUNT_ROWS, $where)
-		);
-	}
+        return [
+            'data' => $this->iaDb->getAll($sql),
+            'total' => (int)$this->iaDb->one(iaDb::STMT_COUNT_ROWS, $where)
+        ];
+    }
 }

@@ -24,42 +24,45 @@
  *
  ******************************************************************************/
 
-if (iaView::REQUEST_HTML == $iaView->getRequestType())
-{
-	if (array_key_exists('album_gallery_page', $configurationValues))
-	{
-		$galleryPageName = 'albums_gallery';
+if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
+    if (array_key_exists('album_gallery_page', $configurationValues)) {
+        $galleryPageName = 'albums_gallery';
 
-		$iaPage = $iaCore->factory('page', iaCore::ADMIN);
+        $iaPage = $iaCore->factory('page', iaCore::FRONT);
 
-		if ($configurationValues['album_gallery_page'])
-		{
-			if (!$iaDb->exists('`name` = :name', array ('name' => $galleryPageName)))
-			{
-				$galleryPage = array (
-					'name' => $galleryPageName,
-					'group' => 5,
-					'service' => false,
-					'readonly' => true,
-					'status' => iaCore::STATUS_ACTIVE,
-					'alias' => 'gallery/',
-					'extras' => 'albums',
-					'menus' => array ('main')
-				);
+        if ($configurationValues['album_gallery_page']) {
+            if (!$iaDb->exists('`name` = :name', ['name' => $galleryPageName], 'pages')) {
+                $galleryPage = [
+                    'name' => $galleryPageName,
+                    'group' => 5,
+                    'service' => false,
+                    'readonly' => true,
+                    'status' => iaCore::STATUS_ACTIVE,
+                    'alias' => 'gallery/',
+                    'module' => 'albums',
+                    'menus' => 'main'
+                ];
 
-				foreach ($iaCore->languages as $langKey => $langTitle) {
-					$galleryPage['titles'][$langKey] = 'Gallery';
-				}
+                foreach ($iaCore->languages as $langKey => $langTitle) {
+                    $phrase = [
+                        'key' => 'page_title_' . $iaDb->getNextId(iaPage::getTable(true)),
+                        'original' => 'Gallery',
+                        'value' => 'Gallery',
+                        'category' => 'page',
+                        'code' => $langKey,
+                        'module' => 'albums'
+                    ];
 
-				$iaPage->insert($galleryPage);
-			}
-		}
-		else
-		{
-			if ($galleryPage = $iaPage->getByName($galleryPageName, false))
-			{
-				$iaPage->delete($galleryPage['id']);
-			}
-		}
-	}
+                    $iaDb->insert($phrase, null, iaLanguage::getTable());
+                }
+
+                $iaDb->insert($galleryPage, null, iaPage::getTable());
+            }
+        } else {
+            if ($galleryPage = $iaPage->getByName($galleryPageName, false)) {
+                $iaDb->delete(sprintf("`key` = 'page_title_%d'", $galleryPage['id']), iaLanguage::getTable());
+                $iaDb->delete(sprintf("`id` = %d", $galleryPage['id']), $iaPage::getTable());
+            }
+        }
+    }
 }

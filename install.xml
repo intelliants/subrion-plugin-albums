@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<plugin name="albums">
+<module type="plugin" name="albums">
 	<title>Albums</title>
 	<summary>An option for users to create their own picture galleries.</summary>
 	<author>Intelliants LLC</author>
 	<contributor>Intelliants LLC</contributor>
-	<version>4.0.0</version>
-	<date>2015-12-09</date>
-	<compatibility>4.0</compatibility>
+	<version>4.1.0</version>
+	<date>2017-03-30</date>
+	<compatibility>4.1</compatibility>
 
 	<pages>
 		<page url="albums/" name="albums" readonly="1">Albums</page>
@@ -66,8 +66,8 @@
 	</phrases>
 
 	<hooks>
-		<hook name="phpCoreDisplayBeforeShowBody" page_type="front" filename="plugins/albums/includes/hook.member-details-tab.php"><![CDATA[]]></hook>
-		<hook name="phpConfigurationChange" type="php" page_type="admin" pages="configuration" filename="plugins/albums/includes/hook.configuration-change.php"><![CDATA[]]></hook>
+		<hook name="phpCoreDisplayBeforeShowBody" page_type="front" filename="hook.member-details-tab"><![CDATA[]]></hook>
+		<hook name="phpConfigurationChange" type="php" page_type="admin" pages="configuration" filename="hook.configuration-change"><![CDATA[]]></hook>
 	</hooks>
 
 	<install>
@@ -106,4 +106,4 @@ CREATE TABLE IF NOT EXISTS `{prefix}albums` (
 	<uninstall>
 		<sql><![CDATA[DROP TABLE IF EXISTS `{prefix}albums`, `{prefix}albums_photos`]]></sql>
 	</uninstall>
-</plugin>
+</module>
