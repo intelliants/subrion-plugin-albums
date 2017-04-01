@@ -1,109 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <module type="plugin" name="albums">
-	<title>Albums</title>
-	<summary>An option for users to create their own picture galleries.</summary>
-	<author>Intelliants LLC</author>
-	<contributor>Intelliants LLC</contributor>
-	<version>4.1.0</version>
-	<date>2017-03-30</date>
-	<compatibility>4.1</compatibility>
+    <title>Albums</title>
+    <summary>An option for users to create their own picture galleries.</summary>
+    <author>Intelliants LLC</author>
+    <contributor>Intelliants LLC</contributor>
+    <version>4.1.0</version>
+    <date>2017-04-01</date>
+    <compatibility>4.1</compatibility>
 
-	<pages>
-		<page url="albums/" name="albums" readonly="1">Albums</page>
-		<page url="profile/albums/" name="my_albums" readonly="1" menus="account" filename="manage">My Albums</page>
-	</pages>
+    <pages>
+        <page url="albums/" name="albums" readonly="1">Albums</page>
+        <page url="profile/albums/" name="my_albums" readonly="1" menus="account" filename="manage">My Albums</page>
+    </pages>
 
-	<adminpages>
-		<page name="albums" menus="menu" url="albums/">Albums</page>
-	</adminpages>
+    <adminpages>
+        <page name="albums" menus="menu" url="albums/">Albums</page>
+    </adminpages>
 
-	<permissions>
-		<permission type="group" type_id="4" access="0">my_albums</permission>
-	</permissions>
+    <permissions>
+        <permission type="group" type_id="4" access="0">my_albums</permission>
+    </permissions>
 
-	<configgroup name="albums">Albums</configgroup>
-	<config group="albums" name="album_autoapprove" type="radio" values="1,0" description="Auto Approval">1</config>
-	<config group="albums" name="album_num_photos" type="text" description="Number of pictures">20</config>
-	<config group="albums" name="album_thumb_dim" type="text" description="Thumb dimension (width,height)">350,350</config>
-	<config group="albums" name="album_dim" type="text" description="Max dimension (width,height)">700,700</config>
-	<config group="albums" name="album_photos_perpage" type="text" description="Photos per page">20</config>
-	<config group="albums" name="album_gallery_page" type="radio" values="1,0" description="Display Member's albums in Gallery">0</config>
-	<config group="albums" name="album_gallery_username" type="text" description="Member Username" show="album_gallery_page|1">admin</config>
-	<config group="albums" name="album_gallery_all_photos" type="radio" values="1,0" description="Display all photos in Gallery (hide albums)" show="album_gallery_page|1">0</config>
+    <configgroup name="albums">Albums</configgroup>
+    <config group="albums" name="album_autoapprove" type="radio" values="1,0" description="Auto Approval">1</config>
+    <config group="albums" name="album_num_photos" type="text" description="Number of pictures">20</config>
+    <config group="albums" name="album_thumb_dim" type="text" description="Thumb dimension (width,height)">350,350</config>
+    <config group="albums" name="album_dim" type="text" description="Max dimension (width,height)">700,700</config>
+    <config group="albums" name="album_photos_perpage" type="text" description="Photos per page">20</config>
+    <config group="albums" name="album_gallery_page" type="radio" values="1,0" description="Display Member's albums in Gallery">0</config>
+    <config group="albums" name="album_gallery_username" type="text" description="Member Username" show="album_gallery_page|1">admin</config>
+    <config group="albums" name="album_gallery_all_photos" type="radio" values="1,0" description="Display all photos in Gallery (hide albums)" show="album_gallery_page|1">0</config>
 
-	<phrases>
-		<phrase category="admin" key="approve">Approve</phrase>
-		<phrase category="admin" key="disapprove">Disapprove</phrase>
+    <phrases>
+        <phrase category="admin" key="approve">Approve</phrase>
+        <phrase category="admin" key="disapprove">Disapprove</phrase>
 
-		<phrase category="common" key="album">Album</phrase>
-		<phrase category="common" key="photos_moved">Photos have been moved.</phrase>
-		<phrase category="common" key="photos">Photos</phrase>
-		<phrase category="common" key="rejected">Rejected</phrase>
+        <phrase category="common" key="album">Album</phrase>
+        <phrase category="common" key="photos_moved">Photos have been moved.</phrase>
+        <phrase category="common" key="photos">Photos</phrase>
+        <phrase category="common" key="rejected">Rejected</phrase>
 
-		<phrase category="frontend" key="album_add">New Album</phrase>
-		<phrase category="frontend" key="album_created">Thanks. New album has been created.</phrase>
-		<phrase category="frontend" key="album_edit">Edit album</phrase>
-		<phrase category="frontend" key="album_invalid">Invalid Album</phrase>
-		<phrase category="frontend" key="album_photo_added">Photo has been added to album.</phrase>
-		<phrase category="frontend" key="album_del_confirm">Are you sure you want to delete the album with all photos in it?</phrase>
-		<phrase category="frontend" key="album_removed">Album has been removed.</phrase>
-		<phrase category="frontend" key="albums">Albums</phrase>
-		<phrase category="frontend" key="back_to_albums">Back to Albums</phrase>
-		<phrase category="frontend" key="choose_photo">Please, choose a photo</phrase>
-		<phrase category="frontend" key="cover">Cover</phrase>
-		<phrase category="frontend" key="manage_photos">Manage Photos</phrase>
-		<phrase category="frontend" key="no_albums">No Albums</phrase>
-		<phrase category="frontend" key="no_photos">No photos</phrase>
-		<phrase category="frontend" key="photo_limit">You can not submit more photos.</phrase>
-		<phrase category="frontend" key="photo_title">Photo title</phrase>
-		<phrase category="frontend" key="photo_uploaded">Photo has been uploaded.</phrase>
-		<phrase category="frontend" key="title_exists">Title exists.</phrase>
-		<phrase category="frontend" key="to_see_user_albums">to see all albums this user created.</phrase>
-		<phrase category="frontend" key="rm_photo">Are you sure you want to delete a photo?</phrase>
-		<phrase category="frontend" key="unsupported_image_type">Unsupported image type.</phrase>
-		<phrase category="frontend" key="upload_photo">Upload Photo</phrase>
-		<phrase category="frontend" key="upload_hint"><![CDATA[Click "<i>Browse...</i>" and choose file on your computer.]]></phrase>
-	</phrases>
+        <phrase category="frontend" key="album_add">New Album</phrase>
+        <phrase category="frontend" key="album_created">Thanks. New album has been created.</phrase>
+        <phrase category="frontend" key="album_edit">Edit album</phrase>
+        <phrase category="frontend" key="album_invalid">Invalid Album</phrase>
+        <phrase category="frontend" key="album_photo_added">Photo has been added to album.</phrase>
+        <phrase category="frontend" key="album_del_confirm">Are you sure you want to delete the album with all photos in it?</phrase>
+        <phrase category="frontend" key="album_removed">Album has been removed.</phrase>
+        <phrase category="frontend" key="albums">Albums</phrase>
+        <phrase category="frontend" key="back_to_albums">Back to Albums</phrase>
+        <phrase category="frontend" key="choose_photo">Please, choose a photo</phrase>
+        <phrase category="frontend" key="cover">Cover</phrase>
+        <phrase category="frontend" key="manage_photos">Manage Photos</phrase>
+        <phrase category="frontend" key="no_albums">No Albums</phrase>
+        <phrase category="frontend" key="no_photos">No photos</phrase>
+        <phrase category="frontend" key="photo_limit">You can not submit more photos.</phrase>
+        <phrase category="frontend" key="photo_title">Photo title</phrase>
+        <phrase category="frontend" key="photo_uploaded">Photo has been uploaded.</phrase>
+        <phrase category="frontend" key="title_exists">Title exists.</phrase>
+        <phrase category="frontend" key="to_see_user_albums">to see all albums this user created.</phrase>
+        <phrase category="frontend" key="rm_photo">Are you sure you want to delete a photo?</phrase>
+        <phrase category="frontend" key="unsupported_image_type">Unsupported image type.</phrase>
+        <phrase category="frontend" key="upload_photo">Upload Photo</phrase>
+        <phrase category="frontend" key="upload_hint"><![CDATA[Click "<i>Browse...</i>" and choose file on your computer.]]></phrase>
+    </phrases>
 
-	<hooks>
-		<hook name="phpCoreDisplayBeforeShowBody" page_type="front" filename="hook.member-details-tab"><![CDATA[]]></hook>
-		<hook name="phpConfigurationChange" type="php" page_type="admin" pages="configuration" filename="hook.configuration-change"><![CDATA[]]></hook>
-	</hooks>
+    <hooks>
+        <hook name="phpCoreDisplayBeforeShowBody" page_type="front" filename="hook.member-details-tab"><![CDATA[]]></hook>
+        <hook name="phpConfigurationChange" type="php" page_type="admin" pages="configuration" filename="hook.configuration-change"><![CDATA[]]></hook>
+    </hooks>
 
-	<install>
-		<sql>
-			<![CDATA[
+    <install>
+        <sql>
+            <![CDATA[
 CREATE TABLE IF NOT EXISTS `{prefix}albums_photos` (
-	`id` mediumint(8) unsigned NOT NULL auto_increment,
-	`member_id` mediumint(8) unsigned NOT NULL,
-	`album_id` mediumint(8) unsigned NOT NULL,
-	`title` varchar(150) NOT NULL,
-	`path` tinytext NOT NULL,
-	`status` enum('active','approval','rejected') NOT NULL default 'approval',
-	`date` date NOT NULL,
-	PRIMARY KEY (`id`),
-	KEY `MEMBER` (`member_id`),
-	KEY `ALBUM` (`album_id`)
+    `id` mediumint(8) unsigned NOT NULL auto_increment,
+    `member_id` mediumint(8) unsigned NOT NULL,
+    `album_id` mediumint(8) unsigned NOT NULL,
+    `title` varchar(150) NOT NULL,
+    `path` tinytext NOT NULL,
+    `status` enum('active','approval','rejected') NOT NULL default 'approval',
+    `date` date NOT NULL,
+    PRIMARY KEY (`id`),
+    KEY `MEMBER` (`member_id`),
+    KEY `ALBUM` (`album_id`)
 ) {mysql_version}
-			]]>
-		</sql>
-		<sql>
-			<![CDATA[
+            ]]>
+        </sql>
+        <sql>
+            <![CDATA[
 CREATE TABLE IF NOT EXISTS `{prefix}albums` (
-	`id` mediumint(8) unsigned NOT NULL auto_increment,
-	`member_id` int(11) unsigned NOT NULL,
-	`title` varchar(50) NOT NULL,
-	`description` tinytext NOT NULL,
-	`cover` tinytext NOT NULL,
-	`date` datetime NOT NULL,
-	PRIMARY KEY (`id`),
-	KEY `MEMBER` (`member_id`)
+    `id` mediumint(8) unsigned NOT NULL auto_increment,
+    `member_id` int(11) unsigned NOT NULL,
+    `title` varchar(50) NOT NULL,
+    `description` tinytext NOT NULL,
+    `cover` tinytext NOT NULL,
+    `date` datetime NOT NULL,
+    PRIMARY KEY (`id`),
+    KEY `MEMBER` (`member_id`)
 ) {mysql_version}
-			]]>
-		</sql>
-	</install>
+            ]]>
+        </sql>
+    </install>
 
-	<uninstall>
-		<sql><![CDATA[DROP TABLE IF EXISTS `{prefix}albums`, `{prefix}albums_photos`]]></sql>
-	</uninstall>
+    <uninstall>
+        <sql><![CDATA[DROP TABLE IF EXISTS `{prefix}albums`, `{prefix}albums_photos`]]></sql>
+    </uninstall>
 </module>
