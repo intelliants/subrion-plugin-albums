@@ -1,5 +1,4 @@
-$(function ()
-{
+$(function () {
     var $link = $('#move-link');
     var move_link = $link.attr('href');
 
@@ -8,33 +7,27 @@ $(function ()
     $link.attr('href', '');
     $('#move-to').val($('#modal-move-to').val());
 
-    $('#remove-album').on('click', function (e)
-    {
+    $('#remove-album').on('click', function (e) {
         confirm(_f('album_del_confirm')) || e.preventDefault();
     });
 
-    $('#upload-photo-btn').on('click', function (e)
-    {
+    $('#upload-photo-btn').on('click', function (e) {
         $(this).addClass('disabled').html('<span class="fa fa-refresh"></span>');
     });
 
-    $('#remove-photo').on('click', function (e)
-    {
+    $('#remove-photo').on('click', function (e) {
         return confirm(_f('rm_photo'));
     });
 
-    $('#move-photo').on('click', function (e)
-    {
+    $('#move-photo').on('click', function (e) {
         $('input[name="move"]').click();
     });
 
-    $('#modal-move-to').on('change', function ()
-    {
+    $('#modal-move-to').on('change', function () {
         $('#move-to').val($(this).val());
     });
 
-    $('input[name="checked[]"]').on('change', function (e)
-    {
+    $('input[name="checked[]"]').on('change', function (e) {
         e.preventDefault();
 
         var selectedImagesCount = $('input[name="checked[]"]:checked').length;

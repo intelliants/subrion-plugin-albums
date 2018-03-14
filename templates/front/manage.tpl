@@ -1,7 +1,7 @@
 {if !$in_album}
-    {include file="{$smarty.const.IA_MODULES}albums/templates/front/albums-list.tpl"}
+    {include 'module:albums/albums-list.tpl'}
 {else}
-    {include file="{$smarty.const.IA_MODULES}albums/templates/front/block.album-info.tpl"}
+    {include 'module:albums/block.album-info.tpl'}
     {if $photos}
         <div class="album-photos">
             <h3 class="title">{lang key='photos'}</h3>
@@ -9,7 +9,7 @@
             <form method="post" id="album-photos-form">
                 {preventCsrf}
 
-                {include file="{$smarty.const.IA_MODULES}albums/templates/front/photos-list.tpl"}
+                {include 'module:albums/photos-list.tpl'}
 
                 <div class="album-actions">
                     <button type="submit" name="cover" class="btn btn-xs btn-info" id="buttoncover" disabled>
@@ -35,8 +35,8 @@
     {/if}
 {/if}
 
-{include file="{$smarty.const.IA_MODULES}albums/templates/front/modal.create-album.tpl"}
-{include file="{$smarty.const.IA_MODULES}albums/templates/front/modal.upload-photo.tpl"}
-{include file="{$smarty.const.IA_MODULES}albums/templates/front/modal.move-photos.tpl"}
+{include 'module:albums/modal.create-album.tpl'}
+{include 'module:albums/modal.upload-photo.tpl'}
+{include 'module:albums/modal.move-photos.tpl'}
 
 {ia_add_media files='js:_IA_URL_modules/albums/js/frontend/album, css:_IA_URL_modules/albums/templates/front/css/style'}

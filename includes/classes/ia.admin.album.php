@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Subrion - open source content management system
- * Copyright (C) 2017 Intelliants, LLC <https://intelliants.com>
+ * Copyright (C) 2018 Intelliants, LLC <https://intelliants.com>
  *
  * This file is part of Subrion.
  *
@@ -27,7 +27,6 @@
 class iaAlbum extends abstractModuleAdmin
 {
     protected static $_table = 'albums_photos';
-
 
     public function delete($id)
     {

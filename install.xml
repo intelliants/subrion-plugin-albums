@@ -4,9 +4,9 @@
     <summary>An option for users to create their own picture galleries.</summary>
     <author>Intelliants LLC</author>
     <contributor>Intelliants LLC</contributor>
-    <version>4.1.0</version>
-    <date>2017-04-01</date>
-    <compatibility>4.1</compatibility>
+    <version>4.2.0</version>
+    <date>2018-03-14</date>
+    <compatibility>4.2</compatibility>
 
     <pages>
         <page url="albums/" name="albums" readonly="1">Albums</page>
@@ -66,8 +66,8 @@
     </phrases>
 
     <hooks>
-        <hook name="phpCoreDisplayBeforeShowBody" page_type="front" filename="hook.member-details-tab"><![CDATA[]]></hook>
-        <hook name="phpConfigurationChange" type="php" page_type="admin" pages="configuration" filename="hook.configuration-change"><![CDATA[]]></hook>
+        <hook name="phpCoreDisplayBeforeShowBody" page_type="front" filename="hook.member-details-tab.php"><![CDATA[]]></hook>
+        <hook name="phpConfigurationChange" type="php" page_type="admin" pages="configuration" filename="hook.configuration-change.php"><![CDATA[]]></hook>
     </hooks>
 
     <install>
