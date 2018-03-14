@@ -47,6 +47,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
 
             $tabs_content['albums'] = $iaSmarty->fetch(IA_MODULES . 'albums/templates/front/albums-list.tpl');
 
+            $iaView->add_css('_IA_URL_modules/albums/templates/front/css/style');
             $iaSmarty->assign('sections', $sections);
             $iaSmarty->assign('tabs_content', $tabs_content);
         }

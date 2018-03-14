@@ -17,5 +17,3 @@
         {/if}
     {/if}
 {/if}
-
-{ia_print_css files='_IA_URL_modules/albums/templates/front/css/style'}

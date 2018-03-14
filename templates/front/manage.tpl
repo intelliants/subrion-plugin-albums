@@ -39,4 +39,4 @@
 {include 'module:albums/modal.upload-photo.tpl'}
 {include 'module:albums/modal.move-photos.tpl'}
 
-{ia_add_media files='js:_IA_URL_modules/albums/js/frontend/album, css:_IA_URL_modules/albums/templates/front/css/style'}
+{ia_add_media files='js:_IA_URL_modules/albums/js/frontend/album'}
