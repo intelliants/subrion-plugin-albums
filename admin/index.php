@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Subrion - open source content management system
- * Copyright (C) 2017 Intelliants, LLC <https://intelliants.com>
+ * Copyright (C) 2018 Intelliants, LLC <https://intelliants.com>
  *
  * This file is part of Subrion.
  *
@@ -25,7 +25,7 @@
  ******************************************************************************/
 
 if (iaView::REQUEST_JSON == $iaView->getRequestType()) {
-    $iaAlbum = $iaCore->factoryPlugin('albums', iaCore::ADMIN, 'album');
+    $iaAlbum = $iaCore->factoryModule('album', IA_CURRENT_MODULE);
 
     $iaDb->setTable(iaAlbum::getTable());
 

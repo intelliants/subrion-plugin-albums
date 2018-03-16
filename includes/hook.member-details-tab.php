@@ -2,7 +2,7 @@
 /******************************************************************************
  *
  * Subrion - open source content management system
- * Copyright (C) 2017 Intelliants, LLC <https://intelliants.com>
+ * Copyright (C) 2018 Intelliants, LLC <https://intelliants.com>
  *
  * This file is part of Subrion.
  *
@@ -47,6 +47,7 @@ if (iaView::REQUEST_HTML == $iaView->getRequestType()) {
 
             $tabs_content['albums'] = $iaSmarty->fetch(IA_MODULES . 'albums/templates/front/albums-list.tpl');
 
+            $iaView->add_css('_IA_URL_modules/albums/templates/front/css/style');
             $iaSmarty->assign('sections', $sections);
             $iaSmarty->assign('tabs_content', $tabs_content);
         }

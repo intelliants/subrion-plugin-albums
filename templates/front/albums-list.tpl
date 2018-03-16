@@ -28,7 +28,6 @@
     <div class="alert alert-info">{lang key='no_albums'}</div>
 {/if}
 
-{ia_print_css files='_IA_URL_modules/albums/templates/front/css/style'}
 
 {ia_add_js}
 $(function()
